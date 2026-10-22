@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Jungle Beat Crew",
+    "slug": "jungle-beat-crew",
+    "scheme": "junglebeatcrew",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#091A21",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#091A21"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.junglebeatcrew.music"
+    },
+    "android": {
+      "package": "com.junglebeatcrew.music",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#091A21"
+      }
+    },
+    "plugins": [
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "enableBackgroundPlayback": false,
+          "enableBackgroundRecording": false
+        }
+      ]
+    ],
+    "assetBundlePatterns": [
+      "assets/**/*"
+    ]
+  }
+}
