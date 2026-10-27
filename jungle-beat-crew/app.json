@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Monke Mix Studio",
+    "slug": "jungle-beat-crew",
+    "scheme": "junglebeatcrew",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#10171E",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#10171E"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.junglebeatcrew.music"
+    },
+    "android": {
+      "package": "com.junglebeatcrew.music",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#10171E"
+      }
+    },
+    "plugins": [
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "enableBackgroundPlayback": false,
+          "enableBackgroundRecording": false
+        }
+      ]
+    ],
+    "assetBundlePatterns": [
+      "assets/**/*"
+    ]
+  }
+}
