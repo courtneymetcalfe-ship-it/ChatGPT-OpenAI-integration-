@@ -3,21 +3,21 @@ import {Alert, Animated, Dimensions, Modal, Pressable, ScrollView, StatusBar, St
 import {LinearGradient} from 'expo-linear-gradient';
 import {useAudioPlayer, setAudioModeAsync} from 'expo-audio';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Svg, {Circle, Ellipse, G, Path, Rect} from 'react-native-svg';
+import Svg, {Circle, Ellipse, G, Path, Polygon, Rect} from 'react-native-svg';
 
-const BG='#091A21', CREAM='#FFF6DF', MINT='#B9F96B', PALE='#9DB0AD';
+const BG='#10171E', CREAM='#F6F9F8', MINT='#C7FC6C', PALE='#9DB0AD';
 const SAVE_KEY='jungle-beat-crew-mixes-v1';
 const CREW=[
-  {name:'PONGO', role:'Kick', color:'#FFAE73', dark:'#C76747', item:'cap'},
-  {name:'CLAPPY', role:'Claps', color:'#FF8190', dark:'#BD4C69', item:'ears'},
-  {name:'SHIVER', role:'Shaker', color:'#76DBD0', dark:'#278F96', item:'spike'},
-  {name:'RUMBLE', role:'Bass', color:'#B29BFA', dark:'#6D61B6', item:'glasses'},
-  {name:'LUMA', role:'Chords', color:'#FC9FCF', dark:'#A65E9F', item:'flower'},
-  {name:'PIP', role:'Melody', color:'#F9D87A', dark:'#C2943E', item:'hair'},
-  {name:'GLIMMER', role:'Bells', color:'#8BD4FF', dark:'#438BC5', item:'star'},
-  {name:'TIKI', role:'Toms', color:'#8DB0FF', dark:'#5466B9', item:'leaf'},
-  {name:'ROO', role:'Vox', color:'#B9ED80', dark:'#548C51', item:'headset'},
-  {name:'SPARK', role:'Synth', color:'#F1DABC', dark:'#AE8C6A', item:'bolt'},
+  {name:'EMBER',role:'Kick',color:'#E9933B',dark:'#A55832',item:'cap'},
+  {name:'RUBY',role:'Claps',color:'#E75B60',dark:'#983A49',item:'band'},
+  {name:'FROST',role:'Shaker',color:'#75D8D9',dark:'#3A8B9C',item:'spike'},
+  {name:'VIOLET',role:'Bass',color:'#9464D9',dark:'#543A94',item:'glasses'},
+  {name:'BLOOM',role:'Chords',color:'#E784BF',dark:'#93467D',item:'flower'},
+  {name:'SOL',role:'Melody',color:'#F1C451',dark:'#AF762E',item:'tuft'},
+  {name:'SKY',role:'Bells',color:'#69ADFF',dark:'#4066A1',item:'star'},
+  {name:'MOSS',role:'Toms',color:'#5DBB83',dark:'#30734F',item:'leaf'},
+  {name:'ECHO',role:'Vox',color:'#B0D77B',dark:'#5D8042',item:'headset'},
+  {name:'GLITCH',role:'Synth',color:'#CEB7A0',dark:'#86715D',item:'bolt'},
 ];
 const PRESETS=[
   {name:'JUNGLE BOUNCE', picks:[0,1,2,3,5,7], glyph:'🌿'},
@@ -37,48 +37,67 @@ const TRACK_ASSETS=[
   require('./assets/audio/10-spark.wav'),
 ];
 
-function Buddy({id,size=80, happy=true}) {
-  const c=CREW[id];
-  return <Svg width={size} height={size} viewBox="0 0 120 126" accessibilityLabel={`${c.name} gorilla character`}>
-    <Ellipse cx="60" cy="119" rx="40" ry="5" fill="#06191D" opacity=".24"/>
-    <Ellipse cx="60" cy="102" rx="39" ry="28" fill={c.dark}/>
-    <Ellipse cx="60" cy="104" rx="23" ry="17" fill={c.color} opacity=".65"/>
-    <Ellipse cx="18" cy="89" rx="12" ry="22" fill={c.dark} transform="rotate(13 18 89)"/>
-    <Ellipse cx="102" cy="89" rx="12" ry="22" fill={c.dark} transform="rotate(-13 102 89)"/>
-    <Circle cx="23" cy="53" r="20" fill={c.dark}/><Circle cx="97" cy="53" r="20" fill={c.dark}/>
-    <Circle cx="23" cy="53" r="10.5" fill={c.color}/><Circle cx="97" cy="53" r="10.5" fill={c.color}/>
-    <Ellipse cx="60" cy="55" rx="44" ry="49" fill={c.color}/>
-    <Ellipse cx="60" cy="71" rx="30" ry="25" fill="#FDE8C5"/>
-    <Ellipse cx="47" cy="53" rx="9.5" ry="12" fill="#FFF9EC"/><Ellipse cx="73" cy="53" rx="9.5" ry="12" fill="#FFF9EC"/>
-    <Circle cx="48" cy="56" r="4.3" fill="#1C2933"/><Circle cx="74" cy="56" r="4.3" fill="#1C2933"/>
-    <Circle cx="49" cy="54" r="1.3" fill="#FFFFFF"/><Circle cx="75" cy="54" r="1.3" fill="#FFFFFF"/>
-    <Ellipse cx="54" cy="73" rx="3" ry="2" fill={c.dark}/><Ellipse cx="66" cy="73" rx="3" ry="2" fill={c.dark}/>
-    {happy ? <Path d="M49 81 Q60 91 71 81" fill="none" stroke="#553B43" strokeWidth="3.8" strokeLinecap="round"/> : <Ellipse cx="60" cy="82" rx="7" ry="8" fill="#553B43"/>}
-    {c.item==='cap'&& <><Path d="M27 24 Q55 -4 88 24 L85 36 Q58 26 35 37 Z" fill="#FF724F"/><Path d="M47 31 L100 30 Q107 30 111 36 Q84 44 44 38Z" fill="#FCCA50"/></>}
-    {c.item==='ears'&& <><Circle cx="29" cy="22" r="9" fill="#F9D2F1"/><Circle cx="93" cy="18" r="10" fill="#F9D2F1"/><Circle cx="61" cy="11" r="8" fill="#F8DF68"/></>}
-    {c.item==='spike'&& <><Path d="M39 13 L47 -3 L57 13 L65 -4 L78 15 L90 14" fill={c.dark} stroke={c.dark} strokeWidth="4" strokeLinejoin="round"/></>}
-    {c.item==='glasses'&& <><Rect x="34" y="46" width="26" height="18" rx="8" fill="#322954" opacity=".8"/><Rect x="64" y="46" width="26" height="18" rx="8" fill="#322954" opacity=".8"/><Path d="M58 52 Q62 49 66 52" stroke="#322954" fill="none" strokeWidth="5"/></>}
-    {c.item==='flower'&& <><Circle cx="86" cy="18" r="7" fill="#FFF3A5"/><Circle cx="86" cy="7" r="7" fill="#FFFFFF"/><Circle cx="97" cy="18" r="7" fill="#FFFFFF"/><Circle cx="86" cy="29" r="7" fill="#FFFFFF"/><Circle cx="75" cy="18" r="7" fill="#FFFFFF"/></>}
-    {c.item==='hair'&& <><Path d="M31 22 Q36 0 51 13 Q54 -5 68 12 Q81 -1 89 23" fill="#D98A34"/></>}
-    {c.item==='star'&& <Path d="M60 0 L66 14 L81 15 L69 25 L73 39 L60 31 L47 39 L51 25 L39 15 L54 14 Z" fill="#FBE888"/>}
-    {c.item==='leaf'&& <Path d="M61 34 Q41 4 23 8 Q29 36 61 34 M64 30 Q84 -1 105 9 Q93 36 64 30" stroke="#2D8266" strokeWidth="3" fill="#8FE9A5"/>}
-    {c.item==='headset'&& <><Path d="M26 55 Q22 3 60 4 Q99 5 95 55" stroke="#253B45" strokeWidth="8" fill="none"/><Rect x="18" y="46" width="13" height="24" rx="6" fill="#253B45"/><Rect x="89" y="46" width="13" height="24" rx="6" fill="#253B45"/></>}
-    {c.item==='bolt'&& <Path d="M60 0 L47 20 H62 L52 40 L81 12 H64 L72 0Z" fill="#FFE36D"/>}
-    <Circle cx="38" cy="77" r="4" fill="#FF8A95" opacity=".55"/><Circle cx="83" cy="77" r="4" fill="#FF8A95" opacity=".55"/>
-  </Svg>;
+
+function Buddy({id,size=80,happy=true}) {
+ const c=CREW[id];
+ return <Svg width={size} height={size*1.12} viewBox="0 0 128 144" accessibilityLabel={c.name+' low-poly gorilla'}>
+   <Ellipse cx="64" cy="138" rx="50" ry="5" fill="#102129" opacity=".14"/>
+   <Path d="M35 75 L18 80 L5 113 L8 130 L27 134 L39 114 L48 89 Z" fill={c.dark}/>
+   <Polygon points="18,80 5,113 20,115 35,87" fill={c.color}/>
+   <Path d="M92 75 L110 81 L123 113 L120 130 L101 134 L89 114 L80 88 Z" fill={c.dark}/>
+   <Polygon points="109,81 123,113 109,116 94,88" fill={c.color}/>
+   <Path d="M36 71 L92 71 L103 91 L92 126 L34 126 L25 92 Z" fill={c.color}/>
+   <Polygon points="36,72 54,81 47,123 34,126 25,91" fill={c.dark} opacity=".65"/>
+   <Polygon points="91,74 80,85 83,125 93,123 104,91" fill={c.dark} opacity=".46"/>
+   <Path d="M47 90 Q64 83 81 91 L85 118 Q65 129 44 118Z" fill="#CED4D2"/>
+   <Polygon points="48,93 63,86 65,120 45,116" fill="#F1F0E8" opacity=".65"/>
+   <Polygon points="24,49 17,41 12,46 11,66 24,74 37,65" fill={c.dark}/>
+   <Polygon points="104,49 112,42 118,49 115,67 105,72 91,65" fill={c.dark}/>
+   <Polygon points="14,51 25,48 29,62 17,65" fill="#DACCC0"/>
+   <Polygon points="114,50 102,48 99,63 111,64" fill="#DACCC0"/>
+   <Path d="M39 9 L72 5 L95 15 L108 38 L104 71 L89 92 L62 96 L37 89 L22 69 L22 36 Z" fill={c.color}/>
+   <Polygon points="39,9 22,36 28,73 39,80 46,13" fill={c.dark} opacity=".53"/>
+   <Polygon points="72,5 95,15 107,39 96,44 78,15" fill="#FFFFFF" opacity=".16"/>
+   <Polygon points="104,70 89,91 68,96 71,75 98,52" fill={c.dark} opacity=".45"/>
+   <Path d="M32 44 L39 35 L59 35 L65 43 L63 63 L53 69 L38 66 L31 58Z" fill="#23303A"/>
+   <Path d="M66 42 L74 34 L92 34 L100 45 L96 61 L83 68 L69 63Z" fill="#23303A"/>
+   <Path d="M36 44 L42 39 L56 39 L61 45 L59 60 L51 64 L41 61 L35 56Z" fill="#F6F8F0"/>
+   <Path d="M71 43 L76 39 L90 39 L95 45 L92 57 L83 63 L74 59Z" fill="#F6F8F0"/>
+   <Ellipse cx="49" cy="53" rx="5.6" ry="7.7" fill="#252631"/>
+   <Ellipse cx="83" cy="52" rx="5.6" ry="7.7" fill="#252631"/>
+   <Circle cx="51" cy="50" r="2" fill="white"/><Circle cx="85" cy="49" r="2" fill="white"/>
+   <Path d="M48 64 L65 61 L83 64 L93 73 L88 87 L67 92 L43 87 L36 75 Z" fill="#A9B2AF"/>
+   <Polygon points="48,64 65,61 62,87 43,86 36,75" fill="#E0E0D7" opacity=".8"/>
+   <Ellipse cx="59" cy="74" rx="3" ry="2.3" fill="#525A5B"/>
+   <Ellipse cx="73" cy="73" rx="3" ry="2.3" fill="#525A5B"/>
+   {happy?<Path d="M56 81 Q66 87 78 80" stroke="#525157" strokeWidth="2.7" fill="none" strokeLinecap="round"/>:<Ellipse cx="67" cy="82" rx="6" ry="4.5" fill="#50525B"/>}
+   {c.item==='cap'&&<><Path d="M28 24 L39 8 L77 3 L97 19 L91 31 L30 32Z" fill="#DB523F"/><Path d="M66 26 L108 26 L111 32 L72 37Z" fill="#FFA45B"/></>}
+   {c.item==='band'&&<><Path d="M24 36 L34 21 L96 19 L105 36" stroke="#FDE789" strokeWidth="7" fill="none"/><Circle cx="26" cy="35" r="6" fill="#FDE789"/></>}
+   {c.item==='spike'&&<Polygon points="40,13 46,-1 57,11 70,-2 78,13 88,9 90,22 40,23" fill="#B2F5EE"/>}
+   {c.item==='glasses'&&<><Rect x="32" y="40" width="32" height="27" rx="5" fill="#1C1638" opacity=".7"/><Rect x="67" y="39" width="34" height="27" rx="5" fill="#1C1638" opacity=".7"/></>}
+   {c.item==='flower'&&<><Circle cx="89" cy="15" r="6" fill="#FFEA93"/><Circle cx="89" cy="4" r="7" fill="#FDF8FF"/><Circle cx="100" cy="15" r="7" fill="#FDF8FF"/><Circle cx="89" cy="26" r="7" fill="#FDF8FF"/><Circle cx="78" cy="15" r="7" fill="#FDF8FF"/></>}
+   {c.item==='tuft'&&<Polygon points="41,16 36,1 53,10 60,-3 73,12 84,6 87,22" fill="#B57C34"/>}
+   {c.item==='star'&&<Path d="M64 -1 L69 11 L81 13 L72 23 L75 34 L64 28 L53 34 L56 23 L47 13 L59 11Z" fill="#FFEB91"/>}
+   {c.item==='leaf'&&<><Path d="M57 23 Q37 -2 24 6 Q30 24 57 23" fill="#A6EE9D"/><Path d="M71 24 Q91 -2 105 7 Q100 24 71 24" fill="#7EEBAA"/></>}
+   {c.item==='headset'&&<><Path d="M24 54 Q18 -3 65 0 Q112 2 109 54" stroke="#2D3642" strokeWidth="9" fill="none"/><Rect x="19" y="44" width="12" height="26" rx="5" fill="#313B47"/><Rect x="100" y="44" width="12" height="26" rx="5" fill="#313B47"/></>}
+   {c.item==='bolt'&&<Polygon points="66,-2 49,22 64,22 56,43 85,13 69,13 76,-2" fill="#FFF08A"/>}
+ </Svg>;
 }
-function JungleDecor() {return <Svg width="100%" height="100%" viewBox="0 0 400 330" preserveAspectRatio="xMidYMid slice" style={StyleSheet.absoluteFillObject} pointerEvents="none">
-  <Circle cx="202" cy="115" r="116" fill="#1C6059" opacity=".3"/>
-  <Circle cx="202" cy="120" r="72" fill="#6BB497" opacity=".09"/>
-  <Path d="M-20 0 Q55 60 45 182 Q3 142 -20 150Z" fill="#257A69" opacity=".44"/>
-  <Path d="M30 -30 Q128 42 75 160 Q54 99 30 -30Z" fill="#48A174" opacity=".38"/>
-  <Path d="M420 0 Q337 57 359 183 Q404 142 420 142Z" fill="#2E9B7B" opacity=".4"/>
-  <Path d="M381 -23 Q275 60 325 146 Q365 88 381 -23Z" fill="#39866F" opacity=".35"/>
-  <Path d="M-30 293 Q70 233 130 309 L148 345 H-30Z" fill="#153F42"/>
-  <Path d="M425 293 Q322 245 272 309 L260 345 H425Z" fill="#153F42"/>
-  <Ellipse cx="200" cy="310" rx="184" ry="30" fill="#07191C" opacity=".55"/>
-  {Array.from({length:13},(_,i)=><Circle key={i} cx={(i*67+29)%390} cy={(i*41+19)%240} r={i%3===0?3:1.8} fill="#C1F98A" opacity={i%3===0?.62:.32}/>)}
-</Svg>}
+function JungleDecor() {return <Svg width="100%" height="100%" viewBox="0 0 400 340" preserveAspectRatio="xMidYMid slice" style={StyleSheet.absoluteFillObject} pointerEvents="none">
+  <Rect width="400" height="340" fill="#7ED8E4"/>
+  <Circle cx="310" cy="61" r="39" fill="#FFF1A4" opacity=".8"/>
+  <Path d="M-10 72 Q20 47 48 68 Q90 45 115 76 Q104 93 75 89 H17Z" fill="#F0FDF5" opacity=".7"/>
+  <Path d="M246 95 Q265 73 281 90 Q310 73 331 99 L318 110 H260Z" fill="#EDF7F3" opacity=".67"/>
+  <Path d="M0 218 Q64 157 146 214 Q240 157 320 205 Q356 171 410 185 L410 340 H0Z" fill="#6DBB89"/>
+  <Path d="M0 258 Q100 197 186 258 Q280 219 400 255 L400 340 H0Z" fill="#3D976E"/>
+  <Path d="M27 151 L35 270 H54 L61 147Z" fill="#87684A"/>
+  <Path d="M-24 161 L43 42 L105 160Z" fill="#2C916B"/>
+  <Path d="M-7 115 L43 13 L88 116Z" fill="#329A76"/>
+  <Path d="M333 168 L345 270 H361 L367 163Z" fill="#866447"/>
+  <Path d="M296 170 L356 27 L422 170Z" fill="#267D60"/>
+  <Path d="M309 124 L356 0 L409 124Z" fill="#33A075"/>
+  <Path d="M0 310 Q200 287 400 314 V340 H0Z" fill="#32654E"/>
+ </Svg>}
 function Spectrum({active,progress}) {return <View style={styles.spectrum} accessibilityLabel="Animated rhythm visualiser">
  {Array.from({length:34},(_,i)=>{const x=(i*7+progress*34)%15;const h=9+Math.max(3,Math.sin(x*1.26)*16+Math.cos(i*2.6)*9+active*3);return <View key={i} style={{width:4,height:Math.max(5,h),borderRadius:6,backgroundColor:i%5===0?'#F99ABB':'#9DE7B6',opacity:active?.92:.25}}/>})}
  </View>}
@@ -93,7 +112,7 @@ export default function App(){
  const p6=useAudioPlayer(TRACK_ASSETS[6]);const p7=useAudioPlayer(TRACK_ASSETS[7]);
  const p8=useAudioPlayer(TRACK_ASSETS[8]);const p9=useAudioPlayer(TRACK_ASSETS[9]);
  const players=useMemo(()=>[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9],[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9]);
- const [stage,setStage]=useState([0,1,3,null,null,null]);
+ const [stage,setStage]=useState([0,1,3,4,6,null]);
  const [playing,setPlaying]=useState(false);
  const [muted,setMuted]=useState([]);const [solo,setSolo]=useState(null);
  const [mixes,setMixes]=useState([]);const [showSave,setShowSave]=useState(false);
@@ -157,23 +176,23 @@ export default function App(){
    <StatusBar barStyle="light-content" backgroundColor={BG}/>
    <ScrollView contentContainerStyle={styles.page} showsVerticalScrollIndicator={false}>
     <View style={styles.topRow}>
-      <View><Text style={styles.eyebrow}>THE WILDEST LITTLE MUSIC MAKERS</Text><Text style={styles.title}>JUNGLE<Text style={{color:MINT}}> BEAT</Text></Text><Text style={styles.subtitle}>CREW <Text style={{color:'#79A8A1',fontSize:13}}>• original rhythm playground</Text></Text></View>
+      <View><Text style={styles.eyebrow}>GORILLAS + MUSIC = YOUR REMIX</Text><Text style={styles.title}>MONKE<Text style={{color:MINT}}> MIX</Text></Text><Text style={styles.subtitle}>STUDIO <Text style={{color:'#79A8A1',fontSize:13}}>• gorilla remix creator</Text></Text></View>
       <Pressable onPress={()=>setShowLibrary(true)} accessibilityRole="button" accessibilityLabel="Open your saved beats" style={styles.libraryButton}><Text style={{fontSize:21}}>♫</Text><Text style={styles.libraryTiny}>MY MIXES</Text></Pressable>
     </View>
-    <View style={styles.infoStrip}><View style={styles.liveDot}/><Text style={styles.infoText}>JUNGLE STUDIO</Text><View style={{flex:1}}/><Text style={styles.infoText}>112 BPM</Text><Text style={{color:MINT,fontSize:13,fontWeight:'900'}}>  ✦</Text><Text style={styles.infoText}>2-BAR LOOP</Text></View>
+    <View style={styles.infoStrip}><View style={styles.liveDot}/><Text style={styles.infoText}>REMIX STUDIO</Text><View style={{flex:1}}/><Text style={styles.infoText}>112 BPM</Text><Text style={{color:MINT,fontSize:13,fontWeight:'900'}}>  ✦</Text><Text style={styles.infoText}>2-BAR LOOP</Text></View>
     <LinearGradient colors={['#16474B','#0B2935','#0D2530']} style={styles.stagePanel}>
       <JungleDecor/>
-      <View style={styles.stageTop}><Text style={styles.stageHeading}>THE GROOVE GROVE</Text><Text style={styles.stageCount}>{activeCount}/6 ON STAGE</Text></View>
+      <View style={styles.stageTop}><Text style={styles.stageHeading}>GORILLA SOUND STAGE</Text><Text style={styles.stageCount}>{activeCount}/6 ON STAGE</Text></View>
       <View style={styles.stageGrid}>
        {stage.map((id,slot)=><Pressable key={slot} accessibilityRole="button" accessibilityLabel={id===null?`Empty stage position ${slot+1}`:`Remove ${CREW[id].name} from stage`} onPress={()=>removeSlot(slot)} style={[styles.stageSpot,{width:narrow?'32%':'31.8%'}]}>
         {id===null?<><View style={styles.emptyStage}><Text style={styles.plus}>+</Text></View><Text style={styles.emptyCaption}>ADD BEAT</Text></>
-        :<><Animated.View style={{transform:[{translateY:playing?danceY:0}],alignItems:'center'}}><View style={[styles.spotGlow,{backgroundColor:CREW[id].color+'25'}]}/><Buddy id={id} size={narrow?76:86} happy={!playing||Math.round(progress*16+slot)%3!==0}/></Animated.View><Text style={styles.stageLabel}>{CREW[id].name}</Text></>}
+        :<><Animated.View style={{transform:[{translateY:playing?danceY:0}],alignItems:'center'}}><View style={[styles.spotGlow,{backgroundColor:CREW[id].color+'30'}]}/><Buddy id={id} size={narrow?79:90} happy={!playing||Math.round(progress*16+slot)%3!==0}/></Animated.View><Text style={styles.stageLabel}>{CREW[id].name}</Text></>}
        </Pressable>)}
       </View>
-      <View style={styles.stageFooter}><Text style={styles.stageHint}>TAP A CHARACTER BELOW TO JOIN THE JAM</Text><Text style={{fontSize:17,color:MINT}}>✦</Text></View>
+      <View style={styles.stageFooter}><Text style={styles.stageHint}>TAP A SOUND TO ADD • TAP A GORILLA TO REMOVE</Text><Text style={{fontSize:17,color:MINT}}>✦</Text></View>
     </LinearGradient>
     <View style={styles.console}>
-       <View style={styles.consoleHeader}><Text style={styles.consoleTitle}>YOUR SOUND LAB</Text><Text style={styles.consoleHint}>LAYER IT. LOVE IT. LOOP IT.</Text></View>
+       <View style={styles.consoleHeader}><Text style={styles.consoleTitle}>NOW PLAYING</Text><Text style={styles.consoleHint}>BUILD YOUR BEAT</Text></View>
        <Spectrum active={playing?activeCount:0} progress={progress}/>
        <View style={styles.controls}>
         <Pressable onPress={togglePlay} accessibilityRole="button" accessibilityLabel={playing?'Pause beat':'Play beat'} style={styles.playButton}><Text style={styles.playIcon}>{playing?'Ⅱ':'▶'}</Text><Text style={styles.playLabel}>{playing?'PAUSE':'PLAY MIX'}</Text></Pressable>
@@ -182,14 +201,18 @@ export default function App(){
         <RoundButton text="♡ SAVE" onPress={()=>setShowSave(true)} small color="#3C3657"/>
        </View>
     </View>
-    <View style={styles.sectionRow}><View><Text style={styles.sectionTitle}>PICK YOUR CREW</Text><Text style={styles.sectionSub}>Tap to add a sound • tap again to remove</Text></View><Text style={{fontSize:23}}>✳</Text></View>
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.crewScroller}>
-     {CREW.map((c,id)=>{const selected=stage.includes(id);return <Pressable key={id} onPress={()=>addOrRemove(id)} accessibilityRole="button" accessibilityLabel={`${selected?'Remove':'Add'} ${c.name} ${c.role} sound`} style={[styles.crewCard,selected&&styles.crewCardSelected]}>
-       <View style={[styles.crewImage,{backgroundColor:c.color+'24'}]}><Buddy id={id} size={74}/></View>
-       <Text numberOfLines={1} style={styles.crewName}>{c.name}</Text><Text style={styles.crewRole}>{c.role}</Text>
-       <View style={[styles.addPill,{backgroundColor:selected?MINT:'#25454A'}]}><Text style={{fontSize:10,fontWeight:'900',color:selected?'#15322D':CREAM}}>{selected?'✓ ON':'＋ ADD'}</Text></View>
+    <View style={styles.sectionRow}><View><Text style={styles.sectionTitle}>CHOOSE YOUR SOUNDS</Text><Text style={styles.sectionSub}>Give each gorilla a beat, melody or voice</Text></View><Text style={{fontSize:23}}>✳</Text></View>
+
+    <View style={styles.soundShelf}>
+     <View style={styles.categoryRow}><Text style={styles.categoryLabel}>BEATS</Text><Text style={styles.categoryLabel}>EFFECTS</Text><Text style={styles.categoryLabel}>MELODIES</Text><Text style={styles.categoryLabel}>VOICES</Text></View>
+     <View style={styles.crewGrid}>
+      {CREW.map((c,id)=>{const selected=stage.includes(id);return <Pressable key={id} onPress={()=>addOrRemove(id)} accessibilityRole="button" accessibilityLabel={(selected?'Remove ':'Add ')+c.name+' '+c.role+' sound'} style={[styles.crewCard,selected&&styles.crewCardSelected]}>
+        <View style={[styles.crewImage,{backgroundColor:selected?'#2C4A42':'#22313E'}]}><Buddy id={id} size={55}/></View>
+        <Text numberOfLines={1} style={styles.crewName}>{c.name}</Text><Text style={styles.crewRole}>{c.role}</Text>
+        <View style={[styles.addPill,{backgroundColor:selected?MINT:'#304550'}]}><Text style={{fontSize:9,fontWeight:'900',color:selected?'#15322D':CREAM}}>{selected?'✓ ON':'＋ ADD'}</Text></View>
       </Pressable>})}
-    </ScrollView>
+     </View>
+    </View>
     <View style={styles.mixOptions}>
      <Text style={styles.miniHeading}>QUICK VIBES</Text>
      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:8,paddingVertical:6}}>{PRESETS.map(p=><RoundButton key={p.name} text={`${p.glyph} ${p.name}`} small onPress={()=>setPreset(p.picks)}/>)}</ScrollView>
@@ -222,19 +245,29 @@ const styles=StyleSheet.create({
  subtitle:{color:'#FDE3AB',fontSize:18,fontWeight:'900',letterSpacing:3.5,marginTop:-3},libraryButton:{backgroundColor:'#153439',borderRadius:17,paddingHorizontal:12,height:67,justifyContent:'center',alignItems:'center',borderWidth:1,borderColor:'#285456'},
  libraryTiny:{fontSize:9,color:'#DFF2DF',fontWeight:'900',marginTop:4},
  infoStrip:{flexDirection:'row',alignItems:'center',gap:8,marginBottom:10,paddingHorizontal:3},liveDot:{height:8,width:8,borderRadius:8,backgroundColor:MINT},infoText:{color:'#A1C5B9',fontSize:10,fontWeight:'900',letterSpacing:.7},
- stagePanel:{borderRadius:24,minHeight:302,overflow:'hidden',borderWidth:1.5,borderColor:'#326965',paddingHorizontal:12,paddingTop:16,paddingBottom:11},
- stageTop:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingHorizontal:8,zIndex:1},stageHeading:{color:'#FFE8C0',fontSize:13,letterSpacing:1.6,fontWeight:'900'},stageCount:{color:'#B7EBC1',fontSize:10,fontWeight:'800'},
+ stagePanel:{borderRadius:20,minHeight:312,overflow:'hidden',borderWidth:2,borderColor:'#3B978E',paddingHorizontal:10,paddingTop:15,paddingBottom:11},
+ stageTop:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingHorizontal:8,zIndex:1},stageHeading:{color:'#143A3B',fontSize:13,letterSpacing:1.6,fontWeight:'900'},stageCount:{color:'#204F45',fontSize:10,fontWeight:'800'},
  stageGrid:{flexDirection:'row',flexWrap:'wrap',justifyContent:'space-between',marginTop:7,minHeight:230,zIndex:1},
- stageSpot:{height:115,alignItems:'center',justifyContent:'flex-end'},spotGlow:{height:63,width:69,borderRadius:50,position:'absolute',left:'15%',top:26},
- emptyStage:{width:68,height:65,borderRadius:45,borderWidth:2,borderStyle:'dashed',borderColor:'#517778',backgroundColor:'#18373D88',alignItems:'center',justifyContent:'center',marginBottom:7},plus:{fontSize:29,color:'#73A59E'},emptyCaption:{fontSize:9,color:'#6E9D98',fontWeight:'900',letterSpacing:.7,marginBottom:2},
- stageLabel:{color:'#FEF1D4',fontSize:9.5,fontWeight:'900',letterSpacing:.7,marginTop:-1},stageFooter:{flexDirection:'row',justifyContent:'center',alignItems:'center',gap:10,marginTop:3},stageHint:{fontSize:9,color:'#92B9B2',fontWeight:'900',letterSpacing:1},
+ stageSpot:{height:120,alignItems:'center',justifyContent:'flex-end'},spotGlow:{height:63,width:69,borderRadius:50,position:'absolute',left:'15%',top:26},
+ emptyStage:{width:68,height:65,borderRadius:45,borderWidth:2,borderStyle:'dashed',borderColor:'#517778',backgroundColor:'#18373D88',alignItems:'center',justifyContent:'center',marginBottom:7},plus:{fontSize:29,color:'#2C6D67'},emptyCaption:{fontSize:9,color:'#174E47',fontWeight:'900',letterSpacing:.7,marginBottom:2},
+ stageLabel:{color:'#173C3B',fontSize:9.5,fontWeight:'900',letterSpacing:.7,marginTop:-1},stageFooter:{flexDirection:'row',justifyContent:'center',alignItems:'center',gap:10,marginTop:3},stageHint:{fontSize:9,color:'#174D43',fontWeight:'900',letterSpacing:1},
  console:{backgroundColor:'#112B32',borderRadius:20,marginTop:13,paddingHorizontal:14,paddingTop:15,paddingBottom:14,borderWidth:1,borderColor:'#28494C'},
  consoleHeader:{flexDirection:'row',justifyContent:'space-between',alignItems:'center'},consoleTitle:{fontSize:14,fontWeight:'900',color:CREAM,letterSpacing:1},consoleHint:{fontSize:9,color:'#779C9B',fontWeight:'800'},
  spectrum:{height:61,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:6,marginTop:5,marginBottom:7},
  controls:{flexDirection:'row',flexWrap:'wrap',gap:7,alignItems:'center'},playButton:{backgroundColor:MINT,borderRadius:14,height:42,paddingHorizontal:16,flexDirection:'row',alignItems:'center',gap:7},playIcon:{fontSize:19,fontWeight:'900',color:'#16312E'},playLabel:{fontSize:11,fontWeight:'900',color:'#16312E',letterSpacing:.5},
  roundButton:{minHeight:42,borderRadius:12,alignItems:'center',justifyContent:'center',paddingHorizontal:14},roundButtonText:{fontSize:12,fontWeight:'900',letterSpacing:.35},
  sectionRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginTop:25,marginBottom:12,paddingHorizontal:1},sectionTitle:{fontSize:18,color:CREAM,fontWeight:'900',letterSpacing:.5},sectionSub:{color:'#8EAAA8',fontSize:12,marginTop:3,lineHeight:18},
- crewScroller:{gap:9,paddingBottom:11,paddingRight:6},crewCard:{width:104,backgroundColor:'#153239',borderRadius:16,borderWidth:1.2,borderColor:'#2D4C50',padding:9,alignItems:'center'},crewCardSelected:{borderColor:MINT,backgroundColor:'#1B3D3B'},crewImage:{width:84,height:81,borderRadius:13,alignItems:'center',justifyContent:'center',marginBottom:8},crewName:{fontSize:11.5,color:CREAM,fontWeight:'900',letterSpacing:.7},crewRole:{fontSize:10,color:'#90B9B1',marginTop:3},addPill:{marginTop:10,borderRadius:20,paddingVertical:6,paddingHorizontal:13},
+
+ soundShelf:{backgroundColor:'#0B1016',padding:8,borderRadius:16,borderWidth:1,borderColor:'#2C3E48'},
+ categoryRow:{flexDirection:'row',justifyContent:'space-around',gap:4,marginTop:4,marginBottom:10},
+ categoryLabel:{fontSize:9,letterSpacing:.55,fontWeight:'900',color:'#B6D5CA'},
+ crewGrid:{flexDirection:'row',flexWrap:'wrap',justifyContent:'space-between',rowGap:8},
+ crewCard:{width:'19%',minHeight:118,backgroundColor:'#1D2732',borderRadius:11,borderWidth:1.2,borderColor:'#3C4A56',paddingVertical:6,paddingHorizontal:2,alignItems:'center',justifyContent:'space-between'},
+ crewCardSelected:{borderColor:MINT,backgroundColor:'#254338'},
+ crewImage:{width:'95%',height:62,borderRadius:8,alignItems:'center',justifyContent:'center',marginBottom:1,overflow:'hidden'},
+ crewName:{fontSize:8.2,color:CREAM,fontWeight:'900',letterSpacing:.15},
+ crewRole:{fontSize:8,color:'#A5C3BA',marginTop:1},
+ addPill:{marginTop:3,borderRadius:12,paddingVertical:4,paddingHorizontal:8},
  mixOptions:{marginTop:14,backgroundColor:'#10272C',padding:15,borderRadius:19,borderWidth:1,borderColor:'#223E42'},miniHeading:{fontSize:12,fontWeight:'900',color:'#E7F0DC',letterSpacing:1,marginTop:9},
  mixerRow:{minHeight:48,flexDirection:'row',alignItems:'center',gap:8,borderBottomWidth:1,borderColor:'#294346'},mixerDot:{width:12,height:12,borderRadius:10},mixerName:{color:CREAM,fontSize:11.5,fontWeight:'900',width:80},mixerRole:{color:'#82A6A0',fontSize:11,flex:1},
  footer:{color:'#487570',fontSize:9,textAlign:'center',marginTop:23,fontWeight:'900',letterSpacing:1.9},
