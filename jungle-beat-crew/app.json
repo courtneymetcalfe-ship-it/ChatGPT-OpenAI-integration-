@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "Jungle Beat Crew",
+    "name": "Monke Mix Studio",
     "slug": "jungle-beat-crew",
     "scheme": "junglebeatcrew",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#091A21",
+    "backgroundColor": "#10171E",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#091A21"
+      "backgroundColor": "#10171E"
     },
     "ios": {
       "supportsTablet": true,
@@ -21,7 +21,7 @@
       "package": "com.junglebeatcrew.music",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#091A21"
+        "backgroundColor": "#10171E"
       }
     },
     "plugins": [
